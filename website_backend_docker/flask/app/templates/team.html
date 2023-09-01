@@ -1,0 +1,174 @@
+<!-- extend sidebar -->
+{% extends "navbar.html" %}
+
+<!-- 更改title -->
+{% block title %}
+團隊介紹
+{% endblock %}
+
+
+<!-- 主內容-->
+{% block main%}
+<div class="full-background-team">
+    <h1 style="text-align: center; color: white;">團隊介紹Meet The Team</h1>
+    <div class="py-5 team4" style="margin:0px auto">
+        <div class="container1">
+            <div class="row">
+                <!-- column  -->
+                <div class="col-lg-4 mb-3">
+                    <!-- Row -->
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <img class="img-fluid rounded-circle custom-image-size"
+                                src="{{ url_for('static', filename='assets/img/jake.png') }}" alt="wrapkit">
+
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <div class="pt-2">
+                                <h1 class="mt-4 font-weight-medium mb-0">蕭郁傑 Jake Xiao</h5>
+                                    <hr>
+                                    <h4>資料收集<br>特徵工程<br>模型訓練</h4>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row -->
+                </div>
+                <!-- column  -->
+                <!-- column  -->
+                <div class="col-lg-4 mb-3">
+                    <!-- Row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- <img src="https://www.wrappixel.com/demos/ui-kit/wrapkit/assets/images/team/t2.jpg"
+                                alt="wrapkit" class="img-fluid rounded-circle" /> -->
+
+                            <img class="img-fluid rounded-circle custom-image-size"
+                                src="{{ url_for('static', filename='assets/img/lucy.jpg') }}" alt="wrapkit">
+
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <div class="pt-2">
+                                <h1 class="mt-4 font-weight-medium mb-0">紀佩萱 Lucy Chi</h5>
+                                    <hr>
+                                    <h4>資料清整<br>資料庫建置<br>數據分析<br>視覺化</h4>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row -->
+                </div>
+                <!-- column  -->
+                <!-- column  -->
+                <div class="col-lg-4 mb-3">
+                    <!-- Row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <img class="img-fluid rounded-circle custom-image-size"
+                                src="{{ url_for('static', filename='assets/img/Ann.jpg') }}" alt="wrapkit">
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <div class="pt-2">
+                                <h1 class="mt-4 font-weight-medium mb-0">楊婕安 Ann Yang</h5>
+                                    <hr>
+                                    <h4>資料收集<br>數據分析<br>網頁前後端<br></h4>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row -->
+                </div>
+                <!-- column  -->
+
+
+                <!-- Row -->
+            </div>
+        </div>
+
+        <!-- 第二列 -->
+        <div class="container1">
+            <div class="row">
+                <!-- column  -->
+                <div class="col-lg-4 mb-3">
+                    <!-- Row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- <img src="https://www.wrappixel.com/demos/ui-kit/wrapkit/assets/images/team/t2.jpg"
+                                alt="wrapkit" class="img-fluid rounded-circle" /> -->
+
+                            <img class="img-fluid rounded-circle custom-image-size"
+                                src="{{ url_for('static', filename='assets/img/marcel.jpg') }}" alt="wrapkit">
+
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <div class="pt-2">
+                                <h1 class="mt-4 font-weight-medium mb-0">林少威 Marcel Lin</h5>
+                                    <hr>
+                                    <h4>資料收集<br>系統建置<br>GCP/Docker架設</h4>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row -->
+                </div>
+                <!-- column  -->
+                <!-- column  -->
+                <div class="col-lg-4 mb-3">
+                    <!-- Row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- <img src="https://www.wrappixel.com/demos/ui-kit/wrapkit/assets/images/team/t2.jpg"
+                                alt="wrapkit" class="img-fluid rounded-circle" /> -->
+
+                            <img class="img-fluid rounded-circle custom-image-size"
+                                src="{{ url_for('static', filename='assets/img/ethan.png') }}" alt="wrapkit">
+
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <div class="pt-2">
+                                <h1 class="mt-4 font-weight-medium mb-0">林維彥 Ethan Lin</h5>
+                                    <hr>
+                                    <h4>網路爬蟲<br>資料清整<br>網頁後端</h4>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row -->
+                </div>
+                <!-- column  -->
+                <!-- column  -->
+                <div class="col-lg-4 mb-3">
+                    <!-- Row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <img class="img-fluid rounded-circle custom-image-size"
+                                src="{{ url_for('static', filename='assets/img/chiakai.jpg') }}" alt="wrapkit">
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <div class="pt-2">
+                                <h1 class="mt-4 font-weight-medium mb-0">徐佳愷 JiaKai Hsu</h5>
+                                    <hr>
+                                    <h4>資料收集<br>資料爬蟲<br>數據分析</h4>
+
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row -->
+                </div>
+                <!-- column  -->
+
+
+                <!-- Row -->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{%endblock%}

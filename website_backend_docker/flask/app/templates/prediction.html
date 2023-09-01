@@ -1,0 +1,198 @@
+<!-- extend sidebar -->
+{% extends "navbar.html" %}
+
+<!-- 更改title -->
+{% block title %}
+預測熱點
+{% endblock %}
+
+<!-- 主內容-->
+{% block main%}
+<div class="full-background">
+    <div id="SelectorContainer" style="text-align: center; color: white;">
+        <h1 style="text-align: center; color: white;">預測事故熱點</h1>
+        <label for="dateSelect">日期:</label>
+
+        <label for="citySelect">地區:</label>
+        <select id="citySelect" required>
+            <option value="TPE">臺北市</option>
+            <option value="NTP">新北市</option>
+            <option value="TY">桃園市</option>
+            <option value="TC">臺中市</option>
+            <option value="TN">臺南市</option>
+            <option value="KS">高雄市</option>
+        </select>
+
+        <label for="vehicleSelect">駕駛車種:</label>
+        <select id="vehicleSelect" required>
+            <option value="人">行人</option>
+            <option value="小客車">小客車</option>
+            <option value="大客車">大客車</option>
+            <option value="機車">機車</option>
+            <option value="大貨車">大貨車</option>
+            <option value="慢車">腳踏車</option>
+            <option value="小貨車(含客、貨兩用)">小貨車</option>
+
+        </select>
+
+        <label for="genderSelect" style="color: white;">性別:</label>
+        <select id="genderSelect" required>
+            <option value="男">男</option>
+            <option value="女">女</option>
+        </select>
+
+
+        <label for="ageSelect" style="color: white;">年齡:</label>
+        <select id="ageSelect" required>
+            <option value="少年">0-17歲</option>
+            <option value="青年">18-39歲</option>
+            <option value="中年">40-64歲</option>
+            <option value="老年">>=65歲</option>
+        </select>
+        <br>
+        <button id="btn_request1" type="button" class="btn btn-light" onclick="generateMap()">查詢</button>
+    </div>
+    <div id="map" style="z-index:1"></div>
+</div>
+
+
+{% endblock main %}
+{%block script%}
+<script>
+
+    var map = null; // 宣告map變數
+
+    function generateMap() {
+
+        var cityValue = document.getElementById("citySelect").value;
+        var vehicleValue = document.getElementById("vehicleSelect").value;
+        var genderValue = document.getElementById("genderSelect").value;
+        var ageValue = document.getElementById("ageSelect").value;
+
+        console.log(cityValue);
+
+        // 創建第一個圖層    
+        var layer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+
+
+        // 清除之前map的Marker
+        if (map != null) {
+            map.remove();
+            map = null;
+        }
+
+        // 根據不同的城市設置地圖的經緯度
+        var latitude, longitude;
+        if (cityValue === "TPE") {
+            latitude = 25.029862824425432;// 台北市的緯度值;
+            longitude = 121.53647981505695;// 台北市的經度值;
+        } else if (cityValue === "NTP") {
+            latitude = 25.014221504674026; // 新北市的緯度值;
+            longitude = 121.4643730074936;// 新北市的經度值;
+        } else if (cityValue === "TY") {
+            latitude = 24.992776726836773; // 桃園市的緯度值;
+            longitude = 121.31454271560115; // 桃園市的經度值;
+        }
+        else if (cityValue === "TC") {
+            latitude = 24.13744457555597; // 台中市的緯度值;
+            longitude = 120.68689288626449; // 台中市的經度值;
+        }
+        else if (cityValue === "TN") {
+            latitude = 22.999141217102405; // 台南市的緯度值;
+            longitude = 120.21355678990696; // 台南市的經度值;
+        }
+        else if (cityValue === "KS") {
+            latitude = 22.63970032386821; // 高雄市的緯度值;
+            longitude = 120.30295850521398; // 高雄市的經度值;
+        }
+
+        map = L.map('map').setView([latitude, longitude], 13);
+        layer.addTo(map);
+
+        //設定圖層群組
+        let layerGroup = null;//使用來管理marker的群組
+        let arrMarkers = [];
+
+        // 按鈕事件，取得 科技執法座標的json回傳資料，response要等取得json後放進去，暫定是array
+        function fetchData() {
+            fetch('http://35.185.174.235/hotSpot?' + new URLSearchParams({
+                city: cityValue,
+                vehicle: vehicleValue,
+                gender: genderValue,
+                age: ageValue,
+            }), {
+                method: 'GET'
+            }).then(function (response) {
+
+                return response.json()
+
+            }).then(function (arr) {
+                console.log(arr)
+                //刪除先前的markers，如果layerGroup不為空，及圖層有內容的話就清空
+                if (layerGroup != null && map.hasLayer(layerGroup)) {
+                    layerGroup.clearLayers();
+                    map.removeLayer(layerGroup);
+                    //變數初始化
+                    layerGroup = null;
+                    arrMarkers = [];
+                }
+
+                // 宣告黃色icon
+                let yellowIcon = L.icon({
+                    iconUrl: 'https://img.onl/VgRZmB',
+                    iconSize: [60, 60],// 圖標的尺寸
+                    iconAnchor: [20, 30],// 圖標的錨點位置point of the icon which will correspond to marker's location
+                    popupAnchor: [-3, -76]// 彈出視窗的位置/ point from which the popup should open relative to the iconAnchor
+                });
+
+                // 宣告紅色icon
+                let redIcon = L.icon({
+                    iconUrl: 'https://img.onl/fww00Z',
+                    iconSize: [100, 100],
+                    iconAnchor: [0, 30],
+                    popupAnchor: [-3, -76]
+                });
+
+                arr.filter(item => item.CITY === cityValue)
+                    .forEach(item => {
+                        // 根據Group的值來選擇icon的URL
+                        let icon;
+                        if (item.GROUP === 'Yellow') {
+                            icon = yellowIcon;
+                        } else {
+                            icon = redIcon;
+                        }
+
+                        // 判斷是否需要紅色字體顯示
+                        let probability1 = item.Probability1;
+                        let probabilityContent = `<p>事故熱區: ${item.Probability}</p><p>事故熱區機率: ${probability1}</p>`;
+                        if (probability1 !== '小於0.01%') {
+                            probabilityContent = `<p style="color: red;">事故熱區: ${item.Probability}</p><p style="color: red;">事故熱區機率: ${probability1}</p>`;
+                        }
+
+                        let marker = L.marker(new L.LatLng(item.LATITUDE, item.LONGITUDE), {
+                            icon: icon
+
+                        }).bindPopup(`<p>事故熱區: ${item.Probability1}</p>`);
+                        marker.addTo(map);
+                    });
+            });
+
+        };
+
+        fetchData(); // 初始化及載入數據
+
+    }
+    function clearMapLayers() {
+        if (markers != null) {
+            markers.clearLayers();
+        }
+    }
+
+
+
+</script>
+
+{%endblock%}

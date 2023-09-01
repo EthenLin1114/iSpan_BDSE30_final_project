@@ -1,0 +1,322 @@
+<!-- extend sidebar -->
+{% extends "navbar.html" %}
+
+{% block title %}地圖分析{% endblock title %}
+
+<!-- 塞入的資料 -->
+{% block main %}
+
+<div class="full-background">
+    <h1 style="text-align: center; color: white;">地圖分析</h1>
+    <div id="SelectorContainer" style="text-align: center; color: white;">
+        <label for="citySelect">科技執法地區:</label>
+        <select id="citySelect" onchange="generateMap()">
+            <option value="Default">請選擇</option>
+            <option value="TPE">臺北市</option>
+            <option value="NTP">新北市</option>
+            <option value="TY">桃園市</option>
+            <option value="TC">臺中市</option>
+            <option value="TN">臺南市</option>
+            <option value="KS">高雄市</option>
+        </select>
+
+        <hr>
+
+        <label for="yearSelect" style="color: white;">事故發生年份
+            :</label>
+        <select id="yearSelect" disabled>
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+        </select>
+
+        <label for="monthSelect" style="color: white;">事故發生月份:</label>
+        <select id="monthSelect" disabled>
+            <option value="1">1月</option>
+            <option value="2">2月</option>
+            <option value="3">3月</option>
+            <option value="4">4月</option>
+            <option value="5">5月</option>
+            <option value="6">6月</option>
+            <option value="7">7月</option>
+            <option value="8">8月</option>
+            <option value="9">9月</option>
+            <option value="10">10月</option>
+            <option value="11">11月</option>
+            <option value="12">12月</option>
+        </select>
+        <label for="typeSelect" style="color: white;">事故發生類型:</label>
+        <select id="typeSelect" disabled>
+            <option value="A1">A1(造成人員當場或24小時內死亡之交通事故)</option>
+            <option value="A2">A2(造成人員受傷或超過24時死亡之交通事故)</option>
+
+        </select>
+        <br>
+        <button id="btn_request1" type="button" class="btn btn-light" onclick="searchData()" disabled>查詢事故</button>
+        <button id="btn_request2" type="button" class="btn btn-light" onclick="sendDataToServer()"
+            style="display: none;">送出參數
+        </button>
+
+
+    </div>
+
+
+    <div id="map" style="z-index:1"></div>
+    <div class="windows8" style="display: none;z-index:2">
+        <div class="wBall" id="wBall_1">
+            <div class="wInnerBall"></div>
+        </div>
+        <div class="wBall" id="wBall_2">
+            <div class="wInnerBall"></div>
+        </div>
+        <div class="wBall" id="wBall_3">
+            <div class="wInnerBall"></div>
+        </div>
+        <div class="wBall" id="wBall_4">
+            <div class="wInnerBall"></div>
+        </div>
+        <div class="wBall" id="wBall_5">
+            <div class="wInnerBall"></div>
+        </div>
+    </div>
+
+
+</div>
+
+
+{% endblock main %}
+{% block script %}
+
+
+<!-- 圖層初始化 -->
+<script>
+    var markers = new L.MarkerClusterGroup();
+
+    function sendDataToServer() {
+        var cityValue = document.getElementById("citySelect").value;
+        var yearValue = document.getElementById("yearSelect").value;
+        var monthValue = document.getElementById("monthSelect").value;
+        var typeValue = document.getElementById("typeSelect").value;
+
+        //  year、month、type 值取得
+        const params = new URLSearchParams({
+            city: cityValue,
+            year: yearValue,
+            month: monthValue,
+            type: typeValue,
+        });
+
+        const url = `http://35.185.174.235/localdb?${params}`;
+
+        fetch(url, {
+            method: 'GET',
+            mode: 'no-cors', // 可以使用 no-cors 模式來禁用瀏覽器的 CORS 檢查
+        })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    // 呼叫函數
+    sendDataToServer();
+
+    // 宣告map變數
+    var map = null;
+
+
+    function generateMap() {
+        var citySelect = document.getElementById("citySelect");
+        var cityValue = citySelect.value;
+
+        console.log(cityValue);
+
+        // 根據選中city判斷是否啟用其他select
+        if (cityValue !== '') {
+            //select年的就不生效
+            yearSelect.disabled = false;
+            monthSelect.disabled = false;
+            typeSelect.disabled = false;
+        } else {
+            // 如果第一個select未選中任何option，則禁用其他select
+            yearSelect.disabled = true;
+            monthSelect.disabled = true;
+            typeSelect.disabled = true;
+            // 同時重置其他select的選中值
+            yearSelect.value = '';
+            monthSelect.value = '';
+            typeSelect.value = '';
+        }
+        // 根據city的選擇來決定是否啟用/禁用提交按鈕
+        if (cityValue !== '') {
+            btn_request1.disabled = false;
+        } else {
+            btn_request1.disabled = true;
+        }
+
+        // 創建第一個圖層    
+        var layer1 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+
+
+        // 清除之前map的Marker
+        if (map != null) {
+            map.remove();
+            map = null;
+        }
+
+        // 根據不同的城市設置地圖的經緯度
+        var latitude, longitude;
+        if (cityValue === "TPE") {
+            latitude = 25.04899756571732;// 台北市的緯度值;
+            longitude = 121.51368522729861;// 台北市的經度值;
+        } else if (cityValue === "NTP") {
+            latitude = 25.014221504674026; // 新北市的緯度值;
+            longitude = 121.4643730074936;// 新北市的經度值;
+        } else if (cityValue === "TY") {
+            latitude = 24.992776726836773; // 桃園市的緯度值;
+            longitude = 121.31454271560115; // 桃園市的經度值;
+        }
+        else if (cityValue === "TC") {
+            latitude = 24.13744457555597; // 台中市的緯度值;
+            longitude = 120.68689288626449; // 台中市的經度值;
+        }
+        else if (cityValue === "TN") {
+            latitude = 22.999141217102405; // 台南市的緯度值;
+            longitude = 120.21355678990696; // 台南市的經度值;
+        }
+        else if (cityValue === "KS") {
+            latitude = 22.63970032386821; // 高雄市的緯度值;
+            longitude = 120.30295850521398; // 高雄市的經度值;
+        }
+
+        map = L.map('map').setView([latitude, longitude], 13);
+        layer1.addTo(map);
+
+
+        //設定圖層群組
+        let layerGroup = null;//使用來管理marker的群組
+        let arrMarkers = [];
+
+        // 按鈕事件，取得 科技執法座標的json回傳資料，response要等取得json後放進去，暫定是array
+        function fetchData() {
+            fetch('http://35.185.174.235/traffic_camera', {
+                method: 'GET'
+            }).then(function (response) {
+
+                return response.json()
+
+            }).then(function (arr) {
+                console.log(arr)
+                //刪除先前的markers，如果layerGroup不為空，及圖層有內容的話就清空
+                if (layerGroup != null && map.hasLayer(layerGroup)) {
+                    layerGroup.clearLayers();
+                    map.removeLayer(layerGroup);
+                    //變數初始化
+                    layerGroup = null;
+                    arrMarkers = [];
+                }
+
+                // 宣告照相機圖片為marker
+                let cameraIcon = L.icon({
+                    iconUrl: 'https://drive.google.com/uc?export=view&id=1D7Z5Dh4I6otCp0a6GAaoFOZ7lfGBKzmk',
+                    iconSize: [20, 20], // 圖標的尺寸
+                    iconAnchor: [20, 30], // 圖標的錨點位置point of the icon which will correspond to marker's location
+                    popupAnchor: [-3, -76] // 彈出視窗的位置/ point from which the popup should open relative to the iconAnchor
+                });
+
+                //畫群組
+                //var markers = new L.MarkerClusterGroup();
+                arr.filter(item => item.CITY === cityValue) // 根據城市篩選
+                    .forEach(item => {
+                        let marker = L.marker(new L.LatLng(item.LATITUDE, item.LONGITUDE), { icon: cameraIcon }) // 新增 Marker
+                            .bindPopup(`<p>科技執法類型: ${item.EQUIP_TYPE}</p><p>科技執法編號: ${item.CAMERA_ID}</p><p>經度: ${item.LONGITUDE}</p><p>緯度: ${item.LATITUDE}</p>`); // 資訊視窗
+                        marker.addTo(map); // 直接將標記加入地圖上
+                    });
+
+            });
+
+        };
+        fetchData(); // 初始化及載入數據
+
+    }
+
+
+    function searchData() {
+        //這邊試查詢事故的方法 
+        var cityValue = document.getElementById("citySelect").value;
+        var yearValue = document.getElementById("yearSelect").value;
+        var monthValue = document.getElementById("monthSelect").value;
+        var typeValue = document.getElementById("typeSelect").value;
+
+        //  year、month、type 值取得
+        const params = new URLSearchParams({
+            city: cityValue,
+            year: yearValue,
+            month: monthValue,
+            type: typeValue,
+        });
+
+        const url = `http://35.185.174.235/localdb?${params}`;
+
+        var loadingSpinner = document.getElementsByClassName("windows8")[0];
+        loadingSpinner.style.display = "block";
+        if (map == null) {
+            map = L.map('map').setView([25.04899756571732, 121.51368522729861], 13);
+        }
+
+
+        fetch(/*'http://35.185.174.235/localdb'*/url, {
+            method: 'GET',
+        }).then(function (response) {
+            return response.json()
+        }).then(function (data) {
+            // 在這裡處理取得的搜尋結果資料
+            clearMapLayers(); // 清空圖層
+            console.log(data);
+
+            //設定圖層群組
+            let arrMarkers_accident = [];
+
+            // 宣告照相機圖片為marker
+            let accidentIcon = L.icon({
+                iconUrl: 'https://drive.google.com/uc?export=view&id=1Knrnuk9Tt9tK9thDTt5iNp2fnV-2RD7Y',
+                iconSize: [40, 50], // size of the icon
+                shadowSize: [15, 30], // size of the shadow
+                iconAnchor: [20, 40], // point of the icon which will correspond to marker's location
+                shadowAnchor: [4, 62],  // the same for the shadow
+                popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+            });
+
+            //畫群組
+            //var markers = new L.MarkerClusterGroup();
+
+            data.map(item => L.marker(new L.LatLng(item.LATITUDE, item.LONGITUDE), { icon: accidentIcon })  // 新增Marker
+                .bindPopup(`<p>年份: ${item.Year}</p><p>月份: ${item.Month}</p><p>類型: ${item.ACCIDENT_TYPE}</p>`))  // 資訊視窗
+                .forEach(item => markers.addLayer(item));  // 把marker加入 L.markerClusterGroup中
+            map.addLayer(markers);
+
+        })
+            .catch(error => {
+                console.error('錯誤訊息:', error.message)
+                    ;
+            }).finally(function () {
+                // 隱藏搜尋中提示元素
+                loadingSpinner.style.display = "none"
+
+            });
+    }
+    function clearMapLayers() {
+        if (markers != null) {
+            markers.clearLayers();
+        }
+    }
+
+
+</script>
+
+
+{% endblock%}
