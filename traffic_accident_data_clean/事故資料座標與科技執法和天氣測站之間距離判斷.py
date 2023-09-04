@@ -5,6 +5,20 @@ import pandas as pd
 from geopy.distance import geodesic
 import re
 
+def data_preprocessing(df_a, df_c):
+    # 將測速資料的經緯度轉為數值
+    df_camera['緯度'] = pd.to_numeric(df_c['緯度'], errors='coerce')
+    df_camera['經度'] = pd.to_numeric(df_c['經度'], errors='coerce')
+
+    # 將經緯度為缺失值的那筆資料刪掉
+    df_c = df_camera.dropna(subset=['緯度', '經度'])  
+
+    # 建立空列
+    new_column = pd.Series
+
+    # 在指定位置插入空的列
+    df_a.insert(7, 'STATION_ID', new_column)
+
 # 將日期的年月日分別切割之後放在list裡
 def spilt_date(date):
     date_list = []
@@ -114,44 +128,34 @@ def find_nearest_camera():
 
     else:
         return None
+    
 if __name__ == "__main__":
     # 讀取事故資料作為df_a
-    df_a = pd.read_csv('事故熱點.csv')
+    df_accident_hotspot = pd.read_csv('事故熱點.csv')
 
     # 讀取測站資料作為df_b
-    df_b = pd.read_csv('氣象測站清單20230726.csv')
+    df_staion = pd.read_csv('氣象測站清單20230726.csv')
 
     # 讀取測速資料作為df_c
-    df_c = pd.read_csv('臺中市_camera.csv')
-
-    # 將測速資料的經緯度轉為數值
-    df_c['緯度'] = pd.to_numeric(df_c['緯度'], errors='coerce')
-    df_c['經度'] = pd.to_numeric(df_c['經度'], errors='coerce')
-
-    # 將經緯度為缺失值的那筆資料刪掉
-    df_c = df_c.dropna(subset=['緯度', '經度'])
+    df_camera = pd.read_csv('臺中市_camera.csv')
 
     # 日期的正規表達式
-    patternYears_month_date = r"(\d+)/(\d+)/(\d+)"    
+    patternYears_month_date = r"(\d+)/(\d+)/(\d+)"
 
-    # 建立空列
-    new_column = pd.Series
-
-    # 在指定位置插入空的列
-    df_a.insert(7, 'STATION_ID', new_column)
+    data_preprocessing(df_accident_hotspot, df_camera)
 
     # 執行一次就好(如果不小心重複執行，就看下面的程式執行到哪筆再把0修改為看到的最後一筆的數字)
     stop_point = 0
 
     # 上面遇到未知狀況或手動停止，除錯完之後再執行這個程式
-    for index, row in df_a.iterrows():
+    for index, row in df_accident_hotspot.iterrows():
         if index >= stop_point:
-            df_a.loc[index, 'STATION_ID'] = find_nearest_station()
-            df_a.loc[index, 'CAMERA_ID'] = find_nearest_camera()
+            df_accident_hotspot.loc[index, 'STATION_ID'] = find_nearest_station()
+            df_accident_hotspot.loc[index, 'CAMERA_ID'] = find_nearest_camera()
             if index % 1000 == 0:
-                df_a.to_csv('台中市_A2_new_20230705.csv', index=False, encoding= 'UTF-8-sig')
+                df_accident_hotspot.to_csv('台中市_A2_new_20230705.csv', index=False, encoding= 'UTF-8-sig')
             stop_point += 1
             print(f'第{index}筆已新增完畢')
 
     # 儲存結果到新的CSV檔案
-    df_a.to_csv('六都事故熱點_new_20230721.csv', index=False, encoding= 'UTF-8-sig')
+    df_accident_hotspot.to_csv('台中市_A2_new_20230705.csv', index=False, encoding= 'UTF-8-sig')
