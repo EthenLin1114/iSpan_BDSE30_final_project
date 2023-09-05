@@ -1,6 +1,3 @@
-# 請先下載geopy
-# !pip install geopy
-
 import pandas as pd
 from geopy.distance import geodesic
 import re
