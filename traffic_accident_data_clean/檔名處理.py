@@ -62,7 +62,7 @@ for filename in os.listdir(source_path):
             if row  % 30000 == 0: 
                 conn.commit()
         # 將有錯誤的部分寫入一個txt檔
-        except MySQLdb.Error as e:
+        except pymysql.MySQLError as e:
             with open('error_log.txt', 'a') as err_log:
                 err_log.write(f"Error inserting row {row}: {str(e)}\n")
 
