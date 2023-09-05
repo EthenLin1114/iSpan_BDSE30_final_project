@@ -4,14 +4,15 @@
 import pandas as pd
 from geopy.distance import geodesic
 import re
+from datetime import datetime
 
 def data_preprocessing(df_a, df_c):
     # 將測速資料的經緯度轉為數值
-    df_camera['緯度'] = pd.to_numeric(df_c['緯度'], errors='coerce')
-    df_camera['經度'] = pd.to_numeric(df_c['經度'], errors='coerce')
+    df_c['緯度'] = pd.to_numeric(df_c['緯度'], errors='coerce')
+    df_c['經度'] = pd.to_numeric(df_c['經度'], errors='coerce')
 
     # 將經緯度為缺失值的那筆資料刪掉
-    df_c = df_camera.dropna(subset=['緯度', '經度'])  
+    df_c = df_c.dropna(subset=['緯度', '經度'])  
 
     # 建立空列
     new_column = pd.Series
@@ -30,9 +31,6 @@ def spilt_date(date):
 
 # 該方法用來判斷該場車禍是否在指定測站的營運時間內，a、b、c值分別為六都車禍的日期、測站開始日期、測站撤銷日期
 def during_activation_True_False(a, b, c):
-    date1 = datetime.strptime(date_str1, '%Y/%m/%d')
-    date2 = datetime.strptime(date_str2, '%Y/%m/%d')
-    date2 = datetime.strptime(date_str2, '%Y/%m/%d')
     try:
         accident_date = spilt_date(a)
         station_start_date = spilt_date(b)
@@ -101,7 +99,7 @@ def during_activation_True_False(a, b, c):
 def find_nearest_station():
     min_distance = float('inf')
     station_id = None
-    for _, coord in df_b.iterrows():
+    for _, coord in df_staion.iterrows():
         distance = geodesic((row['LATITUDE'],row['LONGITUDE']), (coord['緯度'], coord['經度'])).kilometers
         
         if distance < min_distance:
@@ -118,7 +116,7 @@ def find_nearest_camera():
     min_distance = float('inf')
     camera_id = None
     limit_distance = 0.3
-    for _, coord in df_c.iterrows():
+    for _, coord in df_camera.iterrows():
         distance = geodesic((row['LATITUDE'], row['LONGITUDE']), (coord['緯度'], coord['經度'])).kilometers
         if distance < min_distance:
             min_distance = distance
