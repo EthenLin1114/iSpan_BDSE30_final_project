@@ -45,4 +45,4 @@
     END //
     DELIMITER;
 ## 檔案說明
-在使用這個目錄之前請先將flaskapp/app/data/json.zip解壓縮
+請先將flaskapp/app/data/json.zip解壓縮
