@@ -1,2 +1,6 @@
-# iSpan_BDSE30_final_project
-iSpan BDSE30 group one final project
+# iSpan BDSE30 第一組專題報告
+我們的專題的大綱是利用政府公開的歷年車禍資料以及科技執法做交叉比對，到底科技執法是否會降低事故發生率或者是死亡率
+每個資料夾裡都有該資料夾的詳細說明
+
+## 專題程式
+裡面包含網路爬蟲、資料清整、ETL、機器學習、GCP、網頁的程式與相依檔
