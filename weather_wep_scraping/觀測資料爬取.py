@@ -29,40 +29,41 @@ import os
 
 from selenium.webdriver.support.ui import Select
 
-# 啟動瀏覽器工具的選項
-my_options = webdriver.ChromeOptions()
-my_options.add_argument("--start-maximized")         #最大化視窗
-my_options.add_argument("--incognito")               #開啟無痕模式
-my_options.add_argument("--disable-popup-blocking") #禁用彈出攔截
-my_options.add_argument("--disable-notifications")  #取消 chrome 推播通知
-my_options.add_argument("--lang=zh-TW")  #設定為正體中文
+def web_setting(foldername):
+    # 啟動瀏覽器工具的選項
+    my_options = webdriver.ChromeOptions()
+    my_options.add_argument("--start-maximized")         #最大化視窗
+    my_options.add_argument("--incognito")               #開啟無痕模式
+    my_options.add_argument("--disable-popup-blocking") #禁用彈出攔截
+    my_options.add_argument("--disable-notifications")  #取消 chrome 推播通知
+    my_options.add_argument("--lang=zh-TW")  #設定為正體中文
+    # 建立儲存檔案的資料夾
+    folderPath = foldername
+    if not os.path.exists(folderPath):
+        os.makedirs(folderPath)
 
-# 使用 Chrome 的 WebDriver(請先到https://chromedriver.chromium.org/downloads下載與自己Chrome版本相符的chromedriver)
-# 將driver_path變更為chromedriver.exe的所在路徑
-driver_path = r'C:\\Users\\Ethen\\iSpan\\project\\GitHub程式\\chromedriver.exe'
-driver = webdriver.Chrome(executable_path=driver_path, options=my_options)
+    # os.getcwd()為抓到當前目錄的路徑，windows的路徑會用\做分隔，但在Python裡\為跳脫字元，所以下面要放\\
+    fullDownloadPath = os.getcwd() + '\\' + folderPath
 
+    # 設定WebDriver的行為，"prefs"為偏好設定
+    my_options.add_experimental_option("prefs", {
+        
+        # 將fullDownloadPath的路徑設定為默認下載檔案會放的路徑
+        "download.default_directory": fullDownloadPath,
 
-# 建立儲存檔案的資料夾
-folderPath = '台中市資料'
-if not os.path.exists(folderPath):
-    os.makedirs(folderPath)
+        # 可以設定要不要禁用詢問如何處理下載的提示。
+        "download.prompt_for_download": False,
 
-# os.getcwd()為抓到當前目錄的路徑，windows的路徑會用\做分隔，但在Python裡\為跳脫字元，所以下面要放\\
-fullDownloadPath = os.getcwd() + '\\' + folderPath
+        # 在訪問危險網站或下載危險文件時，不會收到任何警告(須確定網頁是否安全再關閉這個功能)
+        "safebrowsing.enabled": False,
+    })
 
-# 設定WebDriver的行為，"prefs"為偏好設定
-my_options.add_experimental_option("prefs", {
-    
-    # 將fullDownloadPath的路徑設定為默認下載檔案會放的路徑
-    "download.default_directory": fullDownloadPath,
+    # 使用 Chrome 的 WebDriver(請先到https://chromedriver.chromium.org/downloads下載與自己Chrome版本相符的chromedriver)
+    # 將driver_path變更為chromedriver.exe的所在路徑
+    driver_path = r'C:\\Users\\Ethen\\GitHub程式\\iSpan_BDSE30_final_project\\weather_wep_scraping\\chromedriver.exe'
+    driver = webdriver.Chrome(executable_path=driver_path, options=my_options)
 
-    # 可以設定要不要禁用詢問如何處理下載的提示。
-    "download.prompt_for_download": False,
-
-    # 在訪問危險網站或下載危險文件時，不會收到任何警告(須確定網頁是否安全再關閉這個功能)
-    "safebrowsing.enabled": False,
-})
+    return driver
 
 # 走訪頁面
 def visit():
@@ -160,6 +161,7 @@ def download_weather_csv(stop_point):
 
 # 停止後主程式
 if __name__ == '__main__':
+    driver = web_setting("台中市天氣")
     url = 'https://e-service.cwb.gov.tw/HistoryDataQuery/DayDataController.do?command=viewMain&station=467770&stname=%25E6%25A2%25A7%25E6%25A3%25B2&datepicker=2013-01-01&altitude=31.73m'#"放入停止時的網址"
     visit1(url)
     #放入停止的數字
