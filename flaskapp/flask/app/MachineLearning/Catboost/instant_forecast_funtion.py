@@ -199,7 +199,7 @@ def preprocessing_for_feeding_model(df):
 def get_probability(X_test, df_prob):
 
     # 載入模型
-    with open("./MachineLearning/Catboost/catboost_model.pkl", "rb") as f:
+    with open("./app/MachineLearning/Catboost/catboost_model.pkl", "rb") as f:
         model = pickle.load(f)
 
     for index, row in X_test.iterrows():

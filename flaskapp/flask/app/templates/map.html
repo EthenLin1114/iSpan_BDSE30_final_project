@@ -109,7 +109,7 @@
             type: typeValue,
         });
 
-        const url = `http://35.185.174.235/localdb?${params}`;
+        const url = `/localdb?${params}`;
 
         fetch(url, {
             method: 'GET',
@@ -203,7 +203,7 @@
 
         // 按鈕事件，取得 科技執法座標的json回傳資料，response要等取得json後放進去，暫定是array
         function fetchData() {
-            fetch('http://35.185.174.235/traffic_camera', {
+            fetch('/traffic_camera', {
                 method: 'GET'
             }).then(function (response) {
 
@@ -260,7 +260,7 @@
             type: typeValue,
         });
 
-        const url = `http://35.185.174.235/localdb?${params}`;
+        const url = `/localdb?${params}`;
 
         var loadingSpinner = document.getElementsByClassName("windows8")[0];
         loadingSpinner.style.display = "block";
@@ -269,7 +269,7 @@
         }
 
 
-        fetch(/*'http://35.185.174.235/localdb'*/url, {
+        fetch(/*'/localdb'*/url, {
             method: 'GET',
         }).then(function (response) {
             return response.json()

@@ -45,7 +45,7 @@ def hotSpot():
     df_six_city_hot_spots = determine_the_csv_to_read()
     weather_api_data_dict = get_instant_weather_data()
 
-    city = request.args.get('cityValue')
+    city = request.args.get('city')
     print(city)
     vehicle = request.args.get('vehicle')
     print(vehicle)

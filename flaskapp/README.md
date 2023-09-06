@@ -12,6 +12,7 @@
 10. mysql -u root -pteamone teamone < back.sql
 11. 建立預存程序
     DELIMITER //
+
     CREATE PROCEDURE RETURN_LL (
         IN city VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci, 
         IN inMonth INT, 
@@ -21,28 +22,54 @@
     BEGIN
         CASE city
             WHEN '臺北市' THEN
-                SELECT LONGITUDE, LATITUDE, ACCIDENT_DEAD, ACCIDENT_INJURY FROM sepdate_tp
-                WHERE inMonth= sepdate_tp.Month AND inYear= sepdate_tp.Year AND intype = ACCIDENT_TYPE;    
+                SELECT LONGITUDE, LATITUDE, ACCIDENT_DEAD, ACCIDENT_INJURY
+                FROM sepdate_tp
+                WHERE inMonth = sepdate_tp.Month 
+                AND inYear = sepdate_tp.Year 
+                AND intype = ACCIDENT_TYPE;
+            
             WHEN '新北市' THEN
-                SELECT LONGITUDE, LATITUDE, ACCIDENT_DEAD, ACCIDENT_INJURY FROM sepdate_np
-                WHERE inMonth= sepdate_np.Month AND inYear= sepdate_np.Year AND intype = ACCIDENT_TYPE;
-                WHEN '桃園市' THEN
-                SELECT LONGITUDE, LATITUDE, ACCIDENT_DEAD, ACCIDENT_INJURY FROM sepdate_ty
-                WHERE inMonth= sepdate_ty.Month AND inYear= sepdate_ty.Year AND intype = ACCIDENT_TYPE;
+                SELECT LONGITUDE, LATITUDE, ACCIDENT_DEAD, ACCIDENT_INJURY
+                FROM sepdate_np
+                WHERE inMonth = sepdate_np.Month 
+                AND inYear = sepdate_np.Year 
+                AND intype = ACCIDENT_TYPE;
+            
+            WHEN '桃園市' THEN
+                SELECT LONGITUDE, LATITUDE, ACCIDENT_DEAD, ACCIDENT_INJURY
+                FROM sepdate_ty
+                WHERE inMonth = sepdate_ty.Month 
+                AND inYear = sepdate_ty.Year 
+                AND intype = ACCIDENT_TYPE;
+            
             WHEN '臺中市' THEN
-                SELECT LONGITUDE, LATITUDE, ACCIDENT_DEAD, ACCIDENT_INJURY FROM sepdate_tc
-                WHERE inMonth= sepdate_tc.Month AND inYear= sepdate_tc.Year AND intype = ACCIDENT_TYPE;
-                WHEN '臺南市' THEN
-                SELECT LONGITUDE, LATITUDE, ACCIDENT_DEAD, ACCIDENT_INJURY FROM sepdate_tn
-                WHERE inMonth= sepdate_tn.Month AND inYear= sepdate_tn.Year AND intype = ACCIDENT_TYPE;
+                SELECT LONGITUDE, LATITUDE, ACCIDENT_DEAD, ACCIDENT_INJURY
+                FROM sepdate_tc
+                WHERE inMonth = sepdate_tc.Month 
+                AND inYear = sepdate_tc.Year 
+                AND intype = ACCIDENT_TYPE;
+            
+            WHEN '臺南市' THEN
+                SELECT LONGITUDE, LATITUDE, ACCIDENT_DEAD, ACCIDENT_INJURY
+                FROM sepdate_tn
+                WHERE inMonth = sepdate_tn.Month 
+                AND inYear = sepdate_tn.Year 
+                AND intype = ACCIDENT_TYPE;
+            
             WHEN '高雄市' THEN
-                SELECT LONGITUDE, LATITUDE, ACCIDENT_DEAD, ACCIDENT_INJURY FROM sepdate_ks
-                            WHERE inMonth= sepdate_ks.Month AND inYear= sepdate_ks.Year AND intype = ACCIDENT_TYPE;
+                SELECT LONGITUDE, LATITUDE, ACCIDENT_DEAD, ACCIDENT_INJURY
+                FROM sepdate_ks
+                WHERE inMonth = sepdate_ks.Month 
+                AND inYear = sepdate_ks.Year 
+                AND intype = ACCIDENT_TYPE;
+            
             ELSE
-                SIGNAL SQLSTATE '45000'
-                    SET MESSAGE_TEXT = 'Invalid city name.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid city name.';
         END CASE;
+        
     END //
-    DELIMITER;
+
+    DELIMITER ;
+
 ## 檔案說明
 請先將flaskapp/app/data/json.zip解壓縮

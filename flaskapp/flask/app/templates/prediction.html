@@ -117,7 +117,7 @@
 
         // 按鈕事件，取得 科技執法座標的json回傳資料，response要等取得json後放進去，暫定是array
         function fetchData() {
-            fetch('http://35.185.174.235/hotSpot?' + new URLSearchParams({
+            fetch('/hotSpot?' + new URLSearchParams({
                 city: cityValue,
                 vehicle: vehicleValue,
                 gender: genderValue,
