@@ -170,7 +170,8 @@ if __name__ == '__main__':
     # 放入想建立的資料夾名稱
     driver = web_setting("台中市天氣")
     stop_point = 0
-    url = 'https://e-service.cwb.gov.tw/HistoryDataQuery/DayDataController.do?command=viewMain&station=467770&stname=%25E6%25A2%25A7%25E6%25A3%25B2&datepicker=2013-01-01&altitude=31.73m'#"放入要爬的縣市網址"
+    #"放入要爬的縣市網址"
+    url = 'https://e-service.cwb.gov.tw/HistoryDataQuery/DayDataController.do?command=viewMain&station=467770&stname=%25E6%25A2%25A7%25E6%25A3%25B2&datepicker=2013-01-01&altitude=31.73m'
     not_done = True
     visit1(url)
     while not_done:
