@@ -76,7 +76,7 @@ def visit1(url):
 
 # 將csv下載下來
 def download_weather_csv(stop_point):
-    
+    error = False
     try:
         # 等待元素出現
         WebDriverWait(driver, 10).until(
@@ -117,6 +117,7 @@ def download_weather_csv(stop_point):
 
             while True:
                 try:
+                    url = driver.current_url
                     # 等待CSV下載的按件出現
                     WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located( 
@@ -145,13 +146,18 @@ def download_weather_csv(stop_point):
                     
                 except ElementNotInteractableException:
                     break
-                
-            visit()
+            
+            driver.get('https://e-service.cwb.gov.tw/HistoryDataQuery/DayDataController.do?command=viewMain&station=467770&stname=%25E6%25A2%25A7%25E6%25A3%25B2&datepicker=2013-01-01&altitude=31.73m')
                 
             sleep(1)
         
+        not_done = False
+
     except TimeoutException:
+        error = True
         print("等待逾時")
+
+    return error ,url, j, not_done
 
 
     # 最一開始執行的主程式
@@ -161,8 +167,14 @@ def download_weather_csv(stop_point):
 
 # 停止後主程式
 if __name__ == '__main__':
+    # 放入想建立的資料夾名稱
     driver = web_setting("台中市天氣")
-    url = 'https://e-service.cwb.gov.tw/HistoryDataQuery/DayDataController.do?command=viewMain&station=467770&stname=%25E6%25A2%25A7%25E6%25A3%25B2&datepicker=2013-01-01&altitude=31.73m'#"放入停止時的網址"
+    stop_point = 0
+    url = 'https://e-service.cwb.gov.tw/HistoryDataQuery/DayDataController.do?command=viewMain&station=467770&stname=%25E6%25A2%25A7%25E6%25A3%25B2&datepicker=2013-01-01&altitude=31.73m'#"放入要爬的縣市網址"
+    not_done = True
     visit1(url)
-    #放入停止的數字
-    download_weather_csv(0)#"停止的數字"
+    while not_done:
+        error_stop, stop_url, stop_point, not_done = download_weather_csv(stop_point)
+        if error_stop == True:
+            visit1(stop_url)
+            error_stop, stop_url, stop_point, not_done = download_weather_csv(stop_point)
